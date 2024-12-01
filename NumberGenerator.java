@@ -8,10 +8,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberGenerator {
 
-    private static final int NUMBER_COUNT = 6;
-    private static final int MIN_NUMBER = 1;
-    private static final int MAX_NUMBER = 45;
-
     public static List<Integer> generateSortedUniqueNumbers() {
         Set<Integer> uniqueNumbers = getUniqueNumbers();
 
@@ -25,8 +21,9 @@ public class NumberGenerator {
         Set<Integer> uniqueNumbers = new HashSet<>();
         Random random = ThreadLocalRandom.current();
 
-        while (uniqueNumbers.size() < NUMBER_COUNT) {
-            int number = random.nextInt(MAX_NUMBER - MIN_NUMBER + 1) + MIN_NUMBER;
+        while (uniqueNumbers.size() < LottoConstants.REQUIRED_NUMBER_COUNT.getValue()) {
+            int number = random.nextInt(LottoConstants.MAX_NUMBER.getValue() - LottoConstants.MIN_NUMBER.getValue() + 1)
+                    + LottoConstants.MIN_NUMBER.getValue();
             uniqueNumbers.add(number);
         }
 

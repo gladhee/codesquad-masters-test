@@ -5,10 +5,6 @@ import java.util.Set;
 
 public class LottoValidator {
 
-    private static final int REQUIRED_NUMBER_COUNT = 6;
-    private static final int MIN_NUMBER = 1;
-    private static final int MAX_NUMBER = 45;
-
     public static void validate(List<Integer> numbers) {
         validateSize(numbers);
         validateRange(numbers);
@@ -16,14 +12,14 @@ public class LottoValidator {
     }
 
     private static void validateSize(List<Integer> numbers) {
-        if (numbers.size() != REQUIRED_NUMBER_COUNT) {
+        if (numbers.size() != LottoConstants.REQUIRED_NUMBER_COUNT.getValue()) {
             throw new IllegalArgumentException("6개의 숫자를 입력해야 합니다.");
         }
     }
 
     private static void validateRange(List<Integer> numbers) {
         List<Integer> invalidRangeNumbers = numbers.stream()
-                .filter(n -> n < MIN_NUMBER || n > MAX_NUMBER)
+                .filter(n -> n < LottoConstants.MIN_NUMBER.getValue() || n > LottoConstants.MAX_NUMBER.getValue())
                 .toList();
 
         if (!invalidRangeNumbers.isEmpty()) {
@@ -45,6 +41,7 @@ public class LottoValidator {
     private static List<Integer> findDuplicates(List<Integer> numbers) {
         Set<Integer> uniqueNumbers = new HashSet<>();
         List<Integer> duplicates = new ArrayList<>();
+
         for (int number : numbers) {
             if (!uniqueNumbers.add(number)) {
                 duplicates.add(number);
