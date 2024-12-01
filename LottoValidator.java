@@ -53,4 +53,5 @@ public class LottoValidator {
 
         return duplicates;
     }
+
 }
