@@ -9,6 +9,8 @@ public class LottoGame {
     }
 
     public void run() {
+        inputView.printInputGuideMessage();
+
         Lotto playerLotto = getLottoFromInput();
         inputView.close();
         outputView.printPlayerNumbers(playerLotto);
