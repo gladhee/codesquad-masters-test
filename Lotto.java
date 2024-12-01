@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Lotto {
 
@@ -21,9 +20,7 @@ public class Lotto {
 
     @Override
     public String toString() {
-        return numbers.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", "));
+        return Parser.formatNumbers(numbers);
     }
 
 }
