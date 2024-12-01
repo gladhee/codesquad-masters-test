@@ -13,6 +13,15 @@ public class NumberGenerator {
     private static final int MAX_NUMBER = 45;
 
     public static List<Integer> generateSortedUniqueNumbers() {
+        Set<Integer> uniqueNumbers = getUniqueNumbers();
+
+        List<Integer> sortedNumbers = new ArrayList<>(uniqueNumbers);
+        Collections.sort(sortedNumbers);
+
+        return sortedNumbers;
+    }
+
+    private static Set<Integer> getUniqueNumbers() {
         Set<Integer> uniqueNumbers = new HashSet<>();
         Random random = ThreadLocalRandom.current();
 
@@ -21,10 +30,7 @@ public class NumberGenerator {
             uniqueNumbers.add(number);
         }
 
-        List<Integer> sortedNumbers = new ArrayList<>(uniqueNumbers);
-        Collections.sort(sortedNumbers);
-
-        return sortedNumbers;
+        return uniqueNumbers;
     }
 
 }
