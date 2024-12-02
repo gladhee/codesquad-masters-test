@@ -18,6 +18,8 @@ public class LottoGame {
         while (gameMoney.canPlay()) {
             playRound();
         }
+
+        inputView.close();
         outputView.printGameEndMessage();
     }
 
