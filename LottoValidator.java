@@ -5,9 +5,6 @@ import java.util.Set;
 
 public class LottoValidator {
 
-    private static final String INVALID_RANGE_MESSAGE = "범위를 벗어난 번호 %s이 포함되어 있습니다. 다른 번호를 선택하세요.";
-    private static final String DUPLICATE_NUMBER_MESSAGE = "같은 번호 %s이 이미 선택되었습니다. 다른 번호를 선택하세요.";
-
     public static void validate(List<Integer> numbers) {
         validateSize(numbers);
         validateRange(numbers);
@@ -27,7 +24,7 @@ public class LottoValidator {
 
         if (!invalidRangeNumbers.isEmpty()) {
             throw new IllegalArgumentException(
-                    String.format(INVALID_RANGE_MESSAGE, Parser.formatNumbers(invalidRangeNumbers)));
+                    MessageFormatter.formatInvalidRangeMessage(invalidRangeNumbers));
         }
     }
 
@@ -37,7 +34,7 @@ public class LottoValidator {
         if (uniqueNumbers.size() != numbers.size()) {
             List<Integer> duplicateNumbers = findDuplicates(numbers);
             throw new IllegalArgumentException(
-                    String.format(DUPLICATE_NUMBER_MESSAGE, Parser.formatNumbers(duplicateNumbers)));
+                    MessageFormatter.formatDuplicateNumberMessage(duplicateNumbers));
         }
     }
 
