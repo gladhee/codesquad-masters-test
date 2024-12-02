@@ -25,7 +25,7 @@ public class MessageFormatter {
         StringBuilder formattedMessage = new StringBuilder();
         List<Integer> matchingNumbers = lottoResult.getMatchingNumbers();
 
-        formattedMessage.append(String.format(MATCHED_COUNT_MESSAGE, matchingNumbers.size(), rank.getPrize()));
+        formattedMessage.append(String.format(MATCHED_COUNT_MESSAGE, matchingNumbers.size(), Parser.formatNumbers(matchingNumbers)));
 
         if (lottoResult.isBonusMatch()) {
             formattedMessage.append(BONUS_MATCHED_MESSAGE);
