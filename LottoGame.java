@@ -16,47 +16,52 @@ public class LottoGame {
 
     public void run() {
         while (gameMoney.canPlay()) {
-            outputView.printRoundInfo(roundManager, gameMoney);
-            gameMoney.deductGameCost();
             playRound();
-            roundManager.increaseRound();
         }
         outputView.printGameEndMessage();
     }
 
     private void playRound() {
-        inputView.printInputGuideMessage();
-        Lotto playerLotto = getLottoFromInput();
+        outputView.printRoundInfo(roundManager, gameMoney);
+        gameMoney.deductGameCost();
+
+        Lotto playerLotto = getPlayerLotto();
         outputView.printPlayerNumbers(playerLotto);
 
-        LottoResult lottoResult = getResult(playerLotto);
-        Rank rank = lottoResult.determineRank();
+        LottoResult lottoResult = calculateResult(playerLotto);
+        processResult(lottoResult);
 
-        gameMoney.addPrize(rank.getPrize());
-
-        outputView.printResult(lottoResult, rank);
-        outputView.printGameMoney(gameMoney);
+        roundManager.increaseRound();
     }
 
-    private LottoResult getResult(Lotto playerLotto) {
+    private Lotto getPlayerLotto() {
+        inputView.printInputGuideMessage();
+        while (true) {
+            try {
+                String inputNumbers = inputView.inputNumbers();
+
+                return Lotto.from(inputNumbers);
+            } catch (IllegalArgumentException e) {
+                outputView.printMessage(e.getMessage());
+            }
+        }
+    }
+
+    private LottoResult calculateResult(Lotto playerLotto) {
         WinningNumbers winningNumbers = WinningNumbers.create();
         outputView.printWinningNumbers(winningNumbers);
+
         List<Integer> matchingNumbers = winningNumbers.findMatchingNumbers(playerLotto);
         boolean bonusMatch = winningNumbers.isBonusNumberMatched(playerLotto);
 
         return LottoResult.from(matchingNumbers, bonusMatch);
     }
 
-    private Lotto getLottoFromInput() {
-        while (true) {
-            try {
-                String input = inputView.inputNumbers();
-
-                return Lotto.from(input);
-            } catch (IllegalArgumentException e) {
-                outputView.printMessage(e.getMessage());
-            }
-        }
+    private void processResult(LottoResult lottoResult) {
+        Rank rank = lottoResult.determineRank();
+        gameMoney.addPrize(rank.getPrize());
+        outputView.printResult(lottoResult, rank);
+        outputView.printGameMoney(gameMoney);
     }
 
 }
