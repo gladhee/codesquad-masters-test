@@ -17,6 +17,13 @@ public class WinningNumbers {
         return new WinningNumbers(numbers, bonusNumber);
     }
 
+    public Rank determineRank(Lotto lotto) {
+        int matchCount = countMatchingNumbers(lotto);
+        boolean bonusMatch = isBonusNumberMatched(lotto);
+
+        return Rank.valueOf(matchCount, bonusMatch);
+    }
+
     public int countMatchingNumbers(Lotto lotto) {
         return (int) winningNumbers.stream()
                 .filter(lotto::contains)
