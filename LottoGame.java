@@ -18,8 +18,8 @@ public class LottoGame {
         WinningNumbers winningNumbers = WinningNumbers.create();
         outputView.printWinningNumbers(winningNumbers);
 
-        int matchCount = winningNumbers.countMatchingNumbers(playerLotto);
-        outputView.printMatchCount(matchCount);
+        Rank rank = winningNumbers.determineRank(playerLotto);
+        outputView.printResult(rank);
     }
 
     private Lotto getLottoFromInput() {
