@@ -24,13 +24,13 @@ public class WinningNumbers {
         return Rank.valueOf(matchCount, bonusMatch);
     }
 
-    public int countMatchingNumbers(Lotto lotto) {
+    private int countMatchingNumbers(Lotto lotto) {
         return (int) winningNumbers.stream()
                 .filter(lotto::contains)
                 .count();
     }
 
-    public boolean isBonusNumberMatched(Lotto lotto) {
+    private boolean isBonusNumberMatched(Lotto lotto) {
         return lotto.contains(bonusNumber);
     }
 
