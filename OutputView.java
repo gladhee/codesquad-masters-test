@@ -9,17 +9,32 @@ public class OutputView {
     }
 
     public void printResult(LottoResult lottoResult, Rank rank) {
-        System.out.println(MessageFormatter.formatMatchingNumbers(lottoResult, rank));
-        System.out.println(MessageFormatter.formatRank(rank));
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(MessageFormatter.formatMatchingNumbers(lottoResult, rank))
+                .append(System.lineSeparator())
+                .append(MessageFormatter.formatRank(rank));
+
+        System.out.println(stringBuilder.toString());
     }
 
     public void printRoundInfo(RoundManager roundManager, GameMoney gameMoney) {
-        System.out.println(MessageFormatter.formatRoundInfo(roundManager));
-        printGameMoney(gameMoney);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(MessageFormatter.formatGameMoney(gameMoney))
+                .append(System.lineSeparator())
+                .append(MessageFormatter.formatRoundInfo(roundManager));
+
+        System.out.println(stringBuilder.toString());
     }
 
     public void printGameMoney(GameMoney gameMoney) {
-        System.out.println(MessageFormatter.formatGameMoney(gameMoney));
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(MessageFormatter.formatGameMoney(gameMoney))
+                .append(System.lineSeparator());
+
+        System.out.println(stringBuilder.toString());
     }
 
     public void printGameEndMessage() {
