@@ -2,31 +2,34 @@ import java.util.List;
 
 public class WinningNumbers {
 
-    private final List<Integer> numbers;
+    private final List<Integer> winningNumbers;
+    private final int bonusNumber;
 
-    private WinningNumbers(List<Integer> numbers) {
-        this.numbers = numbers;
+    private WinningNumbers(List<Integer> winningNumbers, int bonusNumber) {
+        this.winningNumbers = winningNumbers;
+        this.bonusNumber = bonusNumber;
     }
 
     public static WinningNumbers create() {
         List<Integer> numbers = NumberGenerator.generateSortedUniqueNumbers();
+        int bonusNumber = NumberGenerator.generateBonusNumber(numbers);
 
-        return new WinningNumbers(numbers);
+        return new WinningNumbers(numbers, bonusNumber);
     }
 
     public int countMatchingNumbers(Lotto lotto) {
-        return (int) numbers.stream()
+        return (int) winningNumbers.stream()
                 .filter(lotto::contains)
                 .count();
     }
 
-    public boolean contains(int number) {
-        return numbers.contains(number);
+    public boolean isBonusNumberMatched(Lotto lotto) {
+        return lotto.contains(bonusNumber);
     }
 
     @Override
     public String toString() {
-        return Parser.formatNumbers(numbers);
+        return Parser.formatNumbers(winningNumbers);
     }
 
 }
