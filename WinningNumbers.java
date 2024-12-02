@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WinningNumbers {
 
@@ -17,20 +18,13 @@ public class WinningNumbers {
         return new WinningNumbers(numbers, bonusNumber);
     }
 
-    public Rank determineRank(Lotto lotto) {
-        int matchCount = countMatchingNumbers(lotto);
-        boolean bonusMatch = isBonusNumberMatched(lotto);
-
-        return Rank.valueOf(matchCount, bonusMatch);
-    }
-
-    private int countMatchingNumbers(Lotto lotto) {
-        return (int) winningNumbers.stream()
+    public List<Integer> findMatchingNumbers(Lotto lotto) {
+        return winningNumbers.stream()
                 .filter(lotto::contains)
-                .count();
+                .collect(Collectors.toList());
     }
 
-    private boolean isBonusNumberMatched(Lotto lotto) {
+    public boolean isBonusNumberMatched(Lotto lotto) {
         return lotto.contains(bonusNumber);
     }
 
