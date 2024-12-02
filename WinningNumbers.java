@@ -36,7 +36,7 @@ public class WinningNumbers {
 
     @Override
     public String toString() {
-        return Parser.formatNumbers(winningNumbers);
+        return Parser.formatNumbersWithBonusNumber(winningNumbers, bonusNumber);
     }
 
 }

@@ -32,4 +32,8 @@ public class Parser {
                 .collect(Collectors.joining(JOIN_DELIMITER));
     }
 
+    public static String formatNumbersWithBonusNumber(List<Integer> numbers, int bonusNumber) {
+        return formatNumbers(numbers) + " + 보너스 숫자 " + bonusNumber;
+    }
+
 }
