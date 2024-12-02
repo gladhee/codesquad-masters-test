@@ -14,6 +14,12 @@ public class WinningNumbers {
         return new WinningNumbers(numbers);
     }
 
+    public int countMatchingNumbers(Lotto lotto) {
+        return (int) numbers.stream()
+                .filter(lotto::contains)
+                .count();
+    }
+
     public boolean contains(int number) {
         return numbers.contains(number);
     }

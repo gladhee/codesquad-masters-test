@@ -18,7 +18,7 @@ public class LottoGame {
         WinningNumbers winningNumbers = WinningNumbers.create();
         outputView.printWinningNumbers(winningNumbers);
 
-        int matchCount = playerLotto.countMatchingNumbers(winningNumbers);
+        int matchCount = winningNumbers.countMatchingNumbers(playerLotto);
         outputView.printMatchCount(matchCount);
     }
 

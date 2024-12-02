@@ -15,10 +15,8 @@ public class Lotto {
         return new Lotto(numbers);
     }
 
-    public int countMatchingNumbers(WinningNumbers winningNumbers) {
-        return (int) numbers.stream()
-                .filter(winningNumbers::contains)
-                .count();
+    public boolean contains(int number) {
+        return numbers.contains(number);
     }
 
     @Override
