@@ -1,11 +1,17 @@
+import java.util.List;
+
 public class LottoGame {
 
     private final InputView inputView;
     private final OutputView outputView;
+    private final GameMoney gameMoney;
+    private final RoundManager roundManager;
 
-    public LottoGame(InputView inputView, OutputView outputView) {
+    public LottoGame(InputView inputView, OutputView outputView, GameMoney gameMoney, RoundManager roundManager) {
         this.inputView = inputView;
         this.outputView = outputView;
+        this.gameMoney = gameMoney;
+        this.roundManager = roundManager;
     }
 
     public void run() {
