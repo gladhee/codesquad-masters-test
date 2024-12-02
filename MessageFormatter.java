@@ -36,6 +36,7 @@ public class MessageFormatter {
 
     public static String formatRank(Rank rank) {
         String rankMessage = RankMessageMapper.getMessage(rank);
+
         return String.format(RANK_MESSAGE, rankMessage, rank.getPrize());
     }
 

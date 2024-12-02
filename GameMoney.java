@@ -20,10 +20,6 @@ public class GameMoney {
         balance += prizeMoney;
     }
 
-    public int getBalance() {
-        return balance;
-    }
-
     @Override
     public String toString() {
         return String.valueOf(balance);
