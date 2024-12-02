@@ -220,6 +220,176 @@ java Application
 
 ---
 
-## 2단계
+# 2단계
+
+## 1. 목표
+
+- 1단계에서 구현한 사용자 입력 처리 및 당첨 번호 생성 기능에 추가로 보너스 숫자를 관리하고 당첨 등수 판별 로직을 구현합니다.
+- WinningNumbers 클래스에서 보너스 번호를 추가 관리하며, 이를 포함한 당첨 결과를 Rank에 매핑합니다. 
+- 사용자가 입력한 숫자와 당첨 번호를 비교하여 일치 여부를 판별하고, 등수에 따라 적절한 결과를 출력합니다.
+
+---
+
+## 2. 문제 분석
+
+### 요구사항
+
+1. 보너스 숫자 추가
+   - 당첨 번호 6개와 중복되지 않는 보너스 숫자 1개를 추가로 생성.
+   - 숫자는 당첨 번호와 별도로 구분하여 표시.
+2. 당첨 등수 판별
+   - 당첨 번호와 사용자가 입력한 번호를 비교하여 일치 숫자 개수와 보너스 번호 일치 여부를 기준으로 등수를 판별.
+   - 당첨 등수 예시
+     - 동일한 번호 6개: 1등
+     - 동일한 번호 5개 + 보너스 번호: 2등
+     - 동일한 번호 5개: 3등
+     - 동일한 번호 4개: 4등
+     - 동일한 번호 3개: 5등
+     - 그 외: 낙첨
+3. 결과 출력:
+   - 등수에 따라 적절한 결과 메시지를 출력.
+   - ex `결과: 4개 일치. 4등 축하드립니다!`
+
+---
+
+## 3. 해결 과정
+
+### 설계
+
+- Rank는 일치 개수와 보너스 번호 여부를 기준으로 등수를 관리하고, 이를 통해 유연하게 확장 가능하도록 설계.
+- WinningNumbers에서 보너스 번호를 추가로 관리.
+- NumberGenerator에서 당첨 번호와 겹치지 않는 보너스 번호를 생성.
+
+### 1단계: 보너스 번호 추가
+
+- **Problem**
+   - 당첨 번호에 보너스 번호를 추가하여 당첨 결과를 판별해야 함.
+- **Solve**
+   - **`WinningNumbers` 클래스**에서 보너스 번호를 추가로 관리.
+   - **`NumberGenerator` 클래스**에서 당첨 번호와 겹치지 않는 보너스 번호를 생성.
+
+### 2단계: 당첨 등수 판별
+
+- **Problem**
+  - 당첨 번호와 사용자 입력 번호를 비교하여 일치 숫자 개수와 보너스 번호 일치 여부를 기준으로 등수를 판별해야 함.
+- **Solve**
+  - **`Rank` 클래스**에서 일치 숫자 개수와 보너스 번호 일치 여부를 기준으로 등수를 판별.
+  - `Lotto` 클래스에 있던 당첨 번호 비교 로직을 **`WinningNumbers` 클래스**로 이동 후 당첨 개수를 바탕으로 Rank를 반환.
+
+### 3단계: 결과 출력
+
+- **Problem**
+  - 등수에 따라 적절한 결과 메시지를 출력해야 함. 
+- **Solve**
+  - **`RankMessageMapper` 클래스**에서 Rank에 따른 결과 메시지를 관리.
+  - **`OutputView` 클래스**에서 결과 메시지 출력 로직을 분리.
+
+### 프로그램 흐름
+
+1. 보너스 번호 생성
+   - WinningNumbers.create() 시에 NumberGenerator.generateBonusNumber()를 통해 보너스 번호를 생성.
+2. 비교 및 결과 계산
+   - WinningNumbers.isBonusNumberMatched()를 통해 보너스 번호 일치 여부를 확인.
+   - WinningNumbers.determineRank()를 통해 일치하는 숫자 개수와 보너스 번호 일치 여부를 바탕으로 Rank를 반환.
+3. 결과 출력
+   - RankMessageMapper.getMessage()를 통해 Rank에 따른 결과 메시지를 반환.
+   - OutputView.printResult()를 통해 결과 메시지 출력.
+
+---
+
+## 4. 코드 설명
+
+### 주요 클래스 및 메서드
+
+#### 1. `NumberGenerator` 클래스
+- 당첨번호와 중복되지 않는 보너스 번호 1개를 생성.
+- `generateBonusNumber` 메서드를 통해 당첨 번호와 중복되지 않는 보너스 번호를 생성.
+  - `Stream.generate()`를 통해 무한한 숫자를 생성하고, filter()를 통해 중복되지 않는 숫자를 반환.
+
+```java
+public static int generateBonusNumber(List<Integer> excludedNumbers) {
+    return Stream.generate(NumberGenerator::pickRandomNumber)
+            .filter(number -> !excludedNumbers.contains(number))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException(UNEXPECTED_ERROR_MESSAGE));
+}
+```
+
+#### 2. `WinningNumbers` 클래스
+- 보너스 번호를 추가로 관리
+- `isBonusNumberMatched` 메서드를 통해 보너스 번호 일치 여부를 확인.
+- `determineRank` 메서드를 통해 일치하는 숫자 개수와 보너스 번호 일치 여부를 바탕으로 Rank를 반환.
+
+```java
+public Rank determineRank(Lotto lotto) {
+    int matchingCount = lotto.countMatchingNumbers(this);
+    boolean isBonusNumberMatched = isBonusNumberMatched(lotto);
+
+    return Rank.valueOf(matchingCount, isBonusNumberMatched);
+}
+```
+
+#### 3. `Rank` 클래스
+- 일치 숫자 개수와 보너스 번호 일치 여부를 기준으로 등수를 관리.
+- `valueOf` 메소드에서 `isMatch` 메서드를 통해 일치하는 숫자 개수와 보너스 번호 일치 여부를 확인하고, Rank를 반환.
+
+```java
+public static Rank valueOf(int matchCount, boolean bonusMatch) {
+    return Arrays.stream(Rank.values())
+            .filter(rank -> rank.isMatch(matchCount, bonusMatch))
+            .findFirst()
+            .orElse(NO_MATCH);
+}
+```
+
+#### 4. `RankMessageMapper` 클래스
+- Rank에 따른 결과 메시지를 관리.
+- `getMessage` 메서드를 통해 Rank에 따른 결과 메시지를 반환.
+
+---
+
+## 실행 방법
+
+1. **필수 조건**: JDK 11 이상이 설치되어 있어야 합니다.
+2. **모든 `.java` 파일을 동일한 디렉토리에 저장**합니다.
+```bash
+# 컴파일
+javac *.java
+   
+#실행
+java Application
+```
+
+---
+
+## 프로그램 실행 예시
+
+### 유효한 입력
+```
+1~45 중 로또 번호를 여섯개 입력하세요.
+2,6,4,12,8,10
+로또 당첨 숫자: 1, 3, 5, 7, 9, 11 + 보너스 숫자 13
+플레이어 숫자: 2, 4, 6, 8, 10, 12
+결과: 0개 일치. 낙첨입니다.
+```
+
+```
+1~45 중 로또 번호를 여섯개 입력하세요.
+1,2,3,4,5,6
+로또 당첨 숫자: 1, 2, 3, 4, 5, 45 + 보너스 숫자 6
+플레이어 숫자: 1, 2, 3, 4, 5, 6
+결과: 5개 일치, 보너스 볼 일치. 2등 축하드립니다!
+```
+
+```
+1~45 중 로또 번호를 여섯개 입력하세요.
+1,2,3,4,5,6
+로또 당첨 숫자: 1, 2, 3, 4, 5, 6 + 보너스 숫자 7
+플레이어 숫자: 1, 2, 3, 4, 5, 6
+결과: 6개 일치 1등 축하드립니다!
+```
+
+---
+
 
 ## 3단계
