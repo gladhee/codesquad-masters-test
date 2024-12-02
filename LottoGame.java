@@ -16,24 +16,31 @@ public class LottoGame {
 
     public void run() {
         while (gameMoney.canPlay()) {
+            outputView.printRoundInfo(roundManager, gameMoney);
             gameMoney.deductGameCost();
             playRound();
             roundManager.increaseRound();
         }
+        outputView.printGameEndMessage();
     }
 
     private void playRound() {
         inputView.printInputGuideMessage();
         Lotto playerLotto = getLottoFromInput();
+        outputView.printPlayerNumbers(playerLotto);
 
-        LottoResult lottoResult = calculateLottoResult(playerLotto);
+        LottoResult lottoResult = getResult(playerLotto);
         Rank rank = lottoResult.determineRank();
 
         gameMoney.addPrize(rank.getPrize());
+
+        outputView.printResult(lottoResult, rank);
+        outputView.printGameMoney(gameMoney);
     }
 
-    private LottoResult calculateLottoResult(Lotto playerLotto) {
+    private LottoResult getResult(Lotto playerLotto) {
         WinningNumbers winningNumbers = WinningNumbers.create();
+        outputView.printWinningNumbers(winningNumbers);
         List<Integer> matchingNumbers = winningNumbers.findMatchingNumbers(playerLotto);
         boolean bonusMatch = winningNumbers.isBonusNumberMatched(playerLotto);
 

@@ -24,4 +24,9 @@ public class GameMoney {
         return balance;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(balance);
+    }
+
 }
