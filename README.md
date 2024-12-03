@@ -181,7 +181,7 @@ private static void validateDuplicates(List<Integer> numbers) {
 
 ## 실행 방법
 
-1. **필수 조건**: JDK 11 이상이 설치되어 있어야 합니다.
+1. **필수 조건**: JDK 21 이상이 설치되어 있어야 합니다.
 2. **모든 `.java` 파일을 동일한 디렉토리에 저장**합니다.
 ```bash
 # 컴파일
@@ -350,7 +350,7 @@ public static Rank valueOf(int matchCount, boolean bonusMatch) {
 
 ## 실행 방법
 
-1. **필수 조건**: JDK 11 이상이 설치되어 있어야 합니다.
+1. **필수 조건**: JDK 21 이상이 설치되어 있어야 합니다.
 2. **모든 `.java` 파일을 동일한 디렉토리에 저장**합니다.
 ```bash
 # 컴파일
@@ -392,4 +392,258 @@ java Application
 ---
 
 
-## 3단계
+# 3단계
+
+## 1. 목표
+
+- 2단계에서 구현한 로또 게임에 추가로 플레이어 재산을 관리하고, 재산이 소진될 때까지 반복해서 게임을 진행하는 기능을 구현합니다.
+- 각 게임마다 플레이어 재산 변동과 회차 정보를 출력하며, 당첨 여부에 따라 재산이 증가하도록 합니다.
+- 당첨 금액과 회차를 포함한 게임 결과를 사용자에게 직관적으로 제공합니다.
+
+---
+
+## 2. 문제 분석
+
+### 요구사항
+
+1. 사용자로부터 **1부터 45 사이의 숫자 6개**를 입력받아야 합니다.
+2. 입력값은 **쉼표(,)로 구분된 형식**이어야 합니다.
+    - 예시: `1,2,3,4,5,6`
+    - 숫자 사이에 공백이 있어도 무관.
+3. 입력값에 대해 다음과 같은 검증을 수행해야 합니다:
+    - 숫자의 개수가 정확히 6개인지 확인.
+    - 숫자가 1부터 45 사이에 포함되는지 확인.
+    - 중복된 숫자가 없는지 확인.
+4. 잘못된 입력값이 들어올 경우:
+    - 적절한 에러 메시지를 출력.
+    - 에러 메시지 출력 후 재입력을 요청.
+5. 당첨 번호를 **랜덤**으로 생성하고, 사용자 입력값과 비교하여 **일치하는 숫자 개수**를 출력합니다.
+6. 출력시 모든 번호는 **오름차순으로 정렬**해서 출력
+
+
+1. 재산 관리
+   - 초기 재산은 **`10,000`**원으로 설정.  
+   - 한 게임당 `1,000`원이 소진되며, **당첨 시 당첨금은 재산에 추가**.
+   - 재산이 0원이 되면 게임이 종료.
+2. 게임 반복
+   - 재산이 있는 한 무한히 게임 진행 가능.
+   - 각 게임마다 재산 변동, 회차 정보, 당첨 여부를 출력.
+3. 당첨 금액
+   - 1등: 1,000,000원
+   - 2등: 100,000원
+   - 3등: 10,000원
+   - 4등: 5,000원
+   - 5등: 1,000원
+4. 출력 요구사항
+   - 각 게임 시작 전, 현재 재산과 게임 비용을 출력.
+   - 플레이어가 선택한 번호와 당첨 번호를 비교 후 당첨 결과 출력.
+   - 당첨 금액과 변경된 재산을 표시.
+
+---
+
+## 3. 해결 과정
+
+### 설계
+- GameMoney: 플레이어 재산 관리.
+- RoundManager: 현재 게임 회차를 관리.
+- LottoGame: 게임의 주 흐름을 관리하며, 플레이어 재산이 0이 될 때까지 반복 실행. 
+
+### 1단계: 재산 관리 추가
+
+- **Problem**
+    - 게임마다 1,000원씩 재산이 차감되고, 당첨 금액이 재산에 추가되어야 함.
+
+- **Solve**
+    - **`GameMoney` 클래스**에서 재산 차감 및 상금 추가 메서드 구현.
+  
+```java
+public void deductGameCost() {
+    balance -= GAME_COST;
+}
+
+public void addPrize(int prizeMoney) {
+    balance += prizeMoney;
+}
+```
+
+### 2단계: 게임 반복 로직 구현
+
+- **Problem**
+    - 재산이 0이 될 때까지 반복적으로 게임을 실행해야 함.
+    - 매 회차별로 게임 결과를 출력해야 함.
+    - 재산이 1000원 이상이면 게임을 계속 진행해야 함.
+
+- **Solve**
+  - **`LottoGame` 클래스**에서 `while (gameMoney.canPlay())` 구조로 게임 반복 로직 구현.
+  - **`RoundManager` 클래스**에서 라운드 정보를 관리하고, 게임 회차를 증가시킴.
+  - **`GameMoney` 클래스**에서 재산이 1000원 미만이면 게임 종료.
+
+```java
+// LottoGame.java
+public void run() {
+    while (gameMoney.canPlay()) {
+        playRound();
+    }
+
+    inputView.close();
+    outputView.printGameEndMessage();
+}
+
+// GameMoney.java
+public boolean canPlay() {
+    return balance >= GAME_COST;
+}
+```
+
+### 3단계: 결과 반영 및 출력
+
+- **Problem**
+    - 어떤 번호가 **몇 개** 당첨 되었는지 출력해야 함.
+    - **당첨 등수 및 상금 정보**를 출력해야 함.
+    - 당첨 결과에 따라 **재산이 변동**되어야 함.
+
+- **Solve**
+    - **`Rank` 클래스**와 기존의 **`WinningNumbers` 클래스**를 활용해 당첨 여부 판별.
+    - 기존 **`WinningNumbers` 클래스**에서 당첨 번호 개수만 세는것을 당첨된 숫자들을 반환하게 수정.
+    - 기존 **`Rank` 클래스** 에서 등수별 Prize를 추가 후 반환하는 메소드 작성.
+    - **`OutputView` 클래스**에서 게임 결과 메시지를 출력.
+
+### 프로그램 흐름
+
+1. 재산 관리:
+    - GameMoney 클래스 생성시 기본 자산 10.000원으로 초기화.
+2. 게임 반복:
+    - LottoGame 클래스에서 while (gameMoney.canPlay()) 구조로 게임 반복 로직 구현.
+    - 각 게임에서 회차를 증가시키고 결과를 출력.
+    - 재산이 1000원 미만이면 게임 종료.
+3. 결과 출력:
+    - OutputView 클래스에서 게임 결과 메시지 출력.
+    - 게임 결과에 따라 재산 변동을 반영.
+
+---
+
+## 4. 코드 설명
+
+### 주요 클래스 및 메서드
+
+#### 1. `LottoGame` 클래스
+- 프로그램의 전체 흐름을 제어하는 역할을 수행.
+- 각 라운드별 게임을 실행하고, 플레이어 재산이 1000원 미만이 될 때까지 반복 실행.
+
+```java
+public void run() {
+    while (gameMoney.canPlay()) {
+        playRound();
+    }
+
+    inputView.close();
+    outputView.printGameEndMessage();
+}
+
+private void playRound() {
+    outputView.printRoundInfo(roundManager, gameMoney);
+    gameMoney.deductGameCost();
+
+    Lotto playerLotto = getPlayerLotto();
+    outputView.printPlayerNumbers(playerLotto);
+
+    LottoResult lottoResult = calculateResult(playerLotto);
+    processResult(lottoResult);
+
+    roundManager.increaseRound();
+}
+```
+
+#### 2. `GameMoney` 클래스
+
+- 플레이어 재산을 관리하고, 게임 비용 차감 및 상금 추가 메서드를 제공.
+- `canPlay` 메서드를 통해 재산이 1000원 이상인지 확인.
+- `deductGameCost` 메서드를 통해 게임 비용 차감.
+- `addPrize` 메서드를 통해 상금 추가.
+
+#### 3. `RoundManager` 클래스
+
+- 현재 게임 회차를 관리하고, 회차 정보를 출력.
+- `increaseRound` 메서드를 통해 회차를 증가시키고, `toString` 메서드를 통해 회차 정보를 출력.
+
+#### 4. `WinningNumbers` 클래스
+
+- 기존 당첨 번호 생성 및 비교 로직을 수정하여 당첨된 숫자들을 반환.
+
+```java
+public List<Integer> findMatchingNumbers(Lotto lotto) {
+    return winningNumbers.stream()
+            .filter(lotto::contains)
+            .collect(Collectors.toList());
+}
+```
+
+#### 5. `MessageFormatter` 클래스
+
+- 게임 결과 메시지를 포맷팅하여 출력.
+- 기존에 **`OutputView` 클래스**가 담당하던 출력 메시지 포맷팅을 **`MessageFormatter` 클래스**로 분리.
+
+#### 6. `LottoResult` 클래스
+
+- 게임 결과를 담당하는 클래스.
+- 기존에 **`WinningNumbers` 클래스**에서 Rank 판별 로직을 **`LottoResult` 클래스**로 이동.
+- `determineRank` 메서드를 통해 Rank를 반환.
+
+```java
+public Rank determineRank() {
+        int countOfMatch = matchingNumbers.size();
+
+        return Rank.valueOf(countOfMatch, bonusMatch);
+    }
+```
+
+---
+
+## 실행 방법
+
+1. **필수 조건**: JDK 21 이상이 설치되어 있어야 합니다.
+2. **모든 `.java` 파일을 동일한 디렉토리에 저장**합니다.
+```bash
+# 컴파일
+javac *.java
+   
+#실행
+java Application
+```
+
+---
+
+## 프로그램 실행 예시
+
+### 유효한 입력
+```
+플레이어 재산: 10000원
+1회차 게임(-1000)원
+플레이어는 1~45 사이 로또 번호 여섯개를 선택하세요 (쉼표로 구분)
+1,2,3,4,5,6
+플레이어의 숫자: 1, 2, 3, 4, 5, 6
+로또 당첨 숫자: 1, 2, 3, 4, 5, 6 + 보너스 숫자 7
+당첨 번호 6개 일치!(1, 2, 3, 4, 5, 6)
+1등 축하드립니다!!!! (+1000000)
+플레이어 재산: 1009000원
+
+플레이어 재산: 1009000원
+2회차 게임(-1000)원
+플레이어는 1~45 사이 로또 번호 여섯개를 선택하세요 (쉼표로 구분)
+13,45,7,12,8,24
+플레이어의 숫자: 7, 8, 12, 13, 24, 45
+로또 당첨 숫자: 8, 12, 13, 24, 42, 45 + 보너스 숫자 7
+당첨 번호 5개 일치!(8, 12, 13, 24, 45) + 보너스 볼 일치!
+2등 축하드립니다! (+100000)
+플레이어 재산: 1108000원
+
+플레이어 재산: 1108000원
+3회차 게임(-1000)원
+플레이어는 1~45 사이 로또 번호 여섯개를 선택하세요 (쉼표로 구분)
+3,41,23,45,12,8
+플레이어의 숫자: 3, 8, 12, 23, 41, 45
+로또 당첨 숫자: 3, 13, 15, 23, 30, 31 + 보너스 숫자 45
+당첨 번호 2개 일치!(3, 23) + 보너스 볼 일치!
+낙첨되었습니다. (+0)
+플레이어 재산: 1107000원
+```
